@@ -9,6 +9,9 @@ namespace LiveRacersManager
         public List<Result> value { get; set; }
     }
 
+    /// <summary>
+    /// Resut class
+    /// </summary>
     public class Result
     {
         /*
