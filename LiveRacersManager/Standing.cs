@@ -7,6 +7,9 @@ using System.Text;
 
 namespace LiveRacersManager
 {
+    /// <summary>
+    /// Standing class
+    /// </summary>
     public class Standing
     {
         /*
