@@ -30,7 +30,58 @@ namespace LiveRacersManager
 
         private async void FillControls()
         {
-            listaDeResultados.DataSource = (await CallResults()).value;
+            var todosLosResultados = (await CallResults()).value;
+            listaDeResultados.DataSource = todosLosResultados;
+
+            ArmarReporteDeVueltas(todosLosResultados);
+            //var total = 435;
+            //var clean = 222;
+            //var piloto = "N FAPITALLE";
+            //reporteTxt.Text = string.Format("{0,5} = {1,5} = {2}", total, clean, piloto);
+
+        }
+
+        private async void ArmarReporteDeVueltas(List<Result> todosLosResultados)
+        {
+            var sb = new StringBuilder();
+            reporteTxt.Text = string.Empty;
+            progressBar1.Maximum = todosLosResultados.Count();
+            progressBar1.Value = 0;
+            foreach (var grupo in todosLosResultados.GroupBy(r => r.Track))
+            {
+                sb.AppendLine(grupo.Key);
+                Dictionary<string, ShortStanding> dic = new Dictionary<string, ShortStanding>();
+                foreach (var resultado in grupo)
+                {
+                    var url = String.Format(standingsUrl, resultado.Id);
+                    using (var client = new HttpClient())
+                    {
+                        using (var response = await client.GetAsync(url))
+                        {
+                            string resp = await response.Content.ReadAsStringAsync();
+                            var list = JsonConvert.DeserializeObject<List<Standing>>(resp);
+                            foreach (var item in list)
+                            {
+                                if (!dic.ContainsKey(item.Name))
+                                    dic.Add(item.Name, item);
+                                else
+                                {
+                                    dic[item.Name].TotalLaps += item.TotalLaps;
+                                    dic[item.Name].CleanLaps += item.CleanLaps;
+                                    dic[item.Name].Incidents += item.Incidents;
+                                }
+                            }
+                        }
+                    }
+                    progressBar1.Value += progressBar1.Step;
+                }
+                foreach (var item in dic.OrderByDescending(k => k.Value.TotalLaps))
+                {
+                    sb.AppendLine(string.Format("T{0,5} |C{1,5} |I{2,5} |{3}", item.Value.TotalLaps, item.Value.CleanLaps, item.Value.Incidents, item.Value.Name));
+                }
+            }
+            reporteTxt.Text = sb.ToString();
+
         }
 
         public async Task<ResultList> CallResults()
@@ -102,6 +153,11 @@ namespace LiveRacersManager
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             ReordenarGrilla();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            FillControls();
         }
     }
 }

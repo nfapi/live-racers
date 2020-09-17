@@ -10,7 +10,7 @@ namespace LiveRacersManager
     /// <summary>
     /// Standing class
     /// </summary>
-    public class Standing
+    public class Standing : ShortStanding
     {
         /*
           {
@@ -75,18 +75,30 @@ namespace LiveRacersManager
 </SessionDriverModel>
          */
         public int Number { get; set; }
-        public string Name { get; set; }
         public int EndPosition { get; set; }
 
         public int NewPosition { get; set; }
+
+
         public override string ToString()
         {
-            return $"{EndPosition} {Name}";
+            return $"{Name}\t{EndPosition}";
         }
 
         public string ToNewPosition()
         {
             return $"{NewPosition} {Name}";
         }
+    }
+
+    public class ShortStanding
+    {
+        public string Name { get; set; }
+
+        public int TotalLaps { get; set; }
+
+        public int CleanLaps { get; set; }
+
+        public int Incidents { get; set; }
     }
 }
