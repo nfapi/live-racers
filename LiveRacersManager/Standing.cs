@@ -100,5 +100,7 @@ namespace LiveRacersManager
         public int CleanLaps { get; set; }
 
         public int Incidents { get; set; }
+
+        public double BestLap { get; set; } = 3599.999;
     }
 }

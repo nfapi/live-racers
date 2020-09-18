@@ -34,22 +34,24 @@ namespace LiveRacersManager
             listaDeResultados.DataSource = todosLosResultados;
 
             ArmarReporteDeVueltas(todosLosResultados);
-            //var total = 435;
+            //var lap = 96.4657;
             //var clean = 222;
             //var piloto = "N FAPITALLE";
-            //reporteTxt.Text = string.Format("{0,5} = {1,5} = {2}", total, clean, piloto);
+            //var l = TimeSpan.FromSeconds(lap).ToString(@"mm\:ss\.fff");
+            //reporteTxt.Text = string.Format("{0} = {1,5} = {2}", l, clean, piloto);
 
         }
 
         private async void ArmarReporteDeVueltas(List<Result> todosLosResultados)
         {
-            var sb = new StringBuilder();
             reporteTxt.Text = string.Empty;
             progressBar1.Maximum = todosLosResultados.Count();
             progressBar1.Value = 0;
             foreach (var grupo in todosLosResultados.GroupBy(r => r.Track))
             {
+                var sb = new StringBuilder();
                 sb.AppendLine(grupo.Key);
+                sb.AppendLine(" Mejor     | Laps | Piloto");
                 Dictionary<string, ShortStanding> dic = new Dictionary<string, ShortStanding>();
                 foreach (var resultado in grupo)
                 {
@@ -69,19 +71,20 @@ namespace LiveRacersManager
                                     dic[item.Name].TotalLaps += item.TotalLaps;
                                     dic[item.Name].CleanLaps += item.CleanLaps;
                                     dic[item.Name].Incidents += item.Incidents;
+									dic[item.Name].BestLap = item.BestLap > 0 ? Math.Min(item.BestLap, dic[item.Name].BestLap) : dic[item.Name].BestLap;
                                 }
                             }
                         }
                     }
                     progressBar1.Value += progressBar1.Step;
                 }
-                foreach (var item in dic.OrderByDescending(k => k.Value.TotalLaps))
+                foreach (var item in dic.OrderByDescending(k => k.Value.CleanLaps))
                 {
-                    sb.AppendLine(string.Format("T{0,5} |C{1,5} |I{2,5} |{3}", item.Value.TotalLaps, item.Value.CleanLaps, item.Value.Incidents, item.Value.Name));
+                    var l = TimeSpan.FromSeconds(item.Value.BestLap).ToString(@"mm\:ss\.fff");
+                    sb.AppendLine(string.Format("{0,10} |{1,5} | {2}", l, item.Value.CleanLaps, item.Value.Name));
                 }
+                reporteTxt.Text += sb.ToString();
             }
-            reporteTxt.Text = sb.ToString();
-
         }
 
         public async Task<ResultList> CallResults()
