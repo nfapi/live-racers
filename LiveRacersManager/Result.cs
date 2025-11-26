@@ -23,6 +23,8 @@ namespace LiveRacersManager
       "AllowedVehicles":"TN_C2_2017_PRO",
       "Drivers":1,
       "DurationMins":18.0833333333333333333,
+      "Laps":6,"FastestLap":83.4160000000000000000,
+      "AverageLap":85.1396666666666666667,"Incidents":0,
       "Time":720,"SessionType":1,"OriginalSessionType":1,
       "Version":1,"StartDate":"2020-07-23T20:15:22.2341719Z",
       "IsRating":false,"ApplicationId":1,"HasEvent":false,"HasChampionship":false,"EventName":null,
